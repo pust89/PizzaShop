@@ -100,6 +100,22 @@ object DatabaseConnector {
                         price = getInt(PizzaTable.COLUMN_PRICE)
                     )
                 )
+                resultLit.add(
+                    Pizza(
+                        id = getInt(PizzaTable.COLUMN_ID),
+                        name = getString(PizzaTable.COLUMN_NAME),
+                        imageUrl = getString(PizzaTable.COLUMN_IMAGE),
+                        price = getInt(PizzaTable.COLUMN_PRICE)
+                    )
+                )
+                resultLit.add(
+                    Pizza(
+                        id = getInt(PizzaTable.COLUMN_ID),
+                        name = getString(PizzaTable.COLUMN_NAME),
+                        imageUrl = getString(PizzaTable.COLUMN_IMAGE),
+                        price = getInt(PizzaTable.COLUMN_PRICE)
+                    )
+                )
             }
 
         }
