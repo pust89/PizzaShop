@@ -1,5 +1,6 @@
 package presentation
 
+import androidx.compose.runtime.Composable
 import data.dto.PResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -8,7 +9,7 @@ abstract class BaseScreen {
     val coroutineJob = Job()
     val scope = CoroutineScope(coroutineJob)
 
-
+    @Composable
     fun handleResult(result: PResult<*>) {
         if (!result.isHandled) {
             result.handle()
@@ -31,6 +32,7 @@ abstract class BaseScreen {
 
     abstract fun displayHandledResult(result: PResult.Success<*>)
 
+    @Composable
     open fun showError(message: String) {
         hideLoading()
         println("Show error:${message}")

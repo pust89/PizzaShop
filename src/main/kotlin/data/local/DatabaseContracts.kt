@@ -19,7 +19,7 @@ object WorkerTable {
     const val COLUMN_SECOND_NAME = "secondName"
 
     fun createLoginQuery(login: String, password: String): String {
-        return "SELECT * FROM workers WHERE login = $login AND password=$password;"
+        return "SELECT * FROM workers WHERE login = '$login' AND password = '$password';"
     }
 
 }

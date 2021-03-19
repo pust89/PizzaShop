@@ -72,8 +72,10 @@ object DatabaseConnector {
      */
     fun signIn(login: String, password: String): User? {
         val statement: Statement = connection.createStatement()
-        val resultSet: ResultSet = statement.executeQuery(WorkerTable.createLoginQuery(login, password))
-        return if (resultSet.fetchSize == 1) {
+        val loginQuery = WorkerTable.createLoginQuery(login, password)
+        println(loginQuery)
+        val resultSet: ResultSet = statement.executeQuery(loginQuery)
+        return if (resultSet.next()) {
             User(
                 id = resultSet.getInt(WorkerTable.COLUMN_ID),
                 firstName = resultSet.getString(WorkerTable.COLUMN_FIRST_NAME),
