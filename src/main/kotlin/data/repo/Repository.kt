@@ -6,6 +6,7 @@ import data.local.LocalData
 import domain.models.Pizza
 import domain.models.User
 import domain.repo.IRepository
+import kotlinx.coroutines.delay
 
 object Repository : IRepository {
 
@@ -13,6 +14,7 @@ object Repository : IRepository {
     private val localData: ILocalData = LocalData()
 
     override suspend fun signIn(login: String, password: String): PResult<User> {
+        delay(3000)
         return localData.signIn(login, password)
     }
 

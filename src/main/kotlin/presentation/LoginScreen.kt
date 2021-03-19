@@ -1,9 +1,7 @@
 package presentation
 
 import androidx.compose.desktop.Window
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -13,9 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -24,17 +19,16 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import data.dto.PResult
 import data.repo.Repository
-import domain.models.Pizza
+import domain.models.User
 import domain.repo.IRepository
 import kotlinx.coroutines.launch
-import javax.swing.text.StyleConstants
 
 
 val appRepository: IRepository = Repository
 
 
 fun main() {
-    val loginScreen = LoginScreen()
+    LoginScreen()
 }
 
 class LoginScreen : BaseScreen() {
@@ -45,23 +39,73 @@ class LoginScreen : BaseScreen() {
 
     override fun initView(): Unit = Window(title = "Compose for Desktop", size = IntSize(1024, 768)) {
 
-        val login: MutableState<String> = remember { mutableStateOf<String>("") }
-        val password: MutableState<String> = remember { mutableStateOf<String>("") }
+        // fields
+        val loginLiveData: MutableState<String> = remember { mutableStateOf<String>("") }
+        val passwordLiveData: MutableState<String> = remember { mutableStateOf<String>("") }
+        val errorLiveData: MutableState<String> = remember { mutableStateOf<String>("") }
+        val loadingLiveData: MutableState<Boolean> = remember { mutableStateOf<Boolean>(false) }
+
+        fun showLoading() {
+            loadingLiveData.value = true
+            println("Show loading")
+        }
+
+        fun hideLoading() {
+            loadingLiveData.value = false
+            println("Hide loading")
+        }
+
+        fun showError(message: String) {
+            println("Show error:${message}")
+            errorLiveData.value = message
+            hideLoading()
+        }
+
+        fun handledSuccessResult(result: PResult.Success<*>) {
+            (result.data as? User)?.let {
+                println(it)
+
+            }
+        }
+
+        //result handler
+        fun handleResult(result: PResult<*>) {
+            if (!result.isHandled) {
+                result.handle()
+                when (result) {
+                    is PResult.Error -> showError(result.message)
+                    is PResult.Success -> {
+                        hideLoading()
+                        handledSuccessResult(result)
+                    }
+                    is PResult.Empty -> {
+                    }
+                }
+            }
+        }
+
+        fun processSignIn(login: String, password: String) {
+            scope.launch {
+                showLoading()
+                handleResult(appRepository.signIn(login, password))
+            }
+        }
 
         MaterialTheme {
-            Column(Modifier.fillMaxWidth(), Arrangement.spacedBy(50.dp)) {
+            Column(Modifier.fillMaxWidth().fillMaxHeight().padding(top=25.dp), Arrangement.spacedBy(50.dp)) {
                 drawHelloFiled()
-                showLoginInputField(login)
-                showPasswordInputField(password)
+                showDownloading(loadingLiveData)
+                showLoginInputField(loginLiveData)
+                showPasswordInputField(passwordLiveData)
 
                 Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                     onClick = {
-                        processSignIn(login = login.value, password = password.value)
+                        processSignIn(login = loginLiveData.value, password = passwordLiveData.value)
                     }) {
                     Text("SignIn")
                 }
 
-                showErrorFiled("")
+                showErrorFiled(errorLiveData)
 
             }
         }
@@ -84,7 +128,7 @@ class LoginScreen : BaseScreen() {
 
     @Composable
     fun showLoginInputField(login: MutableState<String>) {
-        Column(Modifier.fillMaxWidth(), Arrangement.spacedBy(5.dp)) {
+        Column(Modifier.fillMaxWidth()) {
             TextField(
                 value = login.value,
                 onValueChange = {
@@ -116,13 +160,7 @@ class LoginScreen : BaseScreen() {
 
 
     @Composable
-    override fun showError(message: String) {
-        super.showError(message)
-        showErrorFiled(message)
-    }
-
-    @Composable
-    private fun showErrorFiled(error: String) {
+    private fun showErrorFiled(error: MutableState<String>) {
         Column(
             Modifier.fillMaxWidth(),
             Arrangement.spacedBy(5.dp)
@@ -130,29 +168,29 @@ class LoginScreen : BaseScreen() {
             Text(
                 fontSize = TextUnit.Companion.Sp(18),
                 color = Color.Red,
-                text = error,
+                text = error.value,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
-
         }
     }
 
-
-    @Suppress("UNCHECKED_CAST")
-    override fun displayHandledResult(result: PResult.Success<*>) {
-        (result.data as? List<Pizza>)?.let { list ->
-            list.forEach { pizza ->
-                println(pizza)
+    @Composable
+    private fun showDownloading(isLoading: MutableState<Boolean>) {
+        if (isLoading.value) {
+            Row(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
+
     }
+
 
     private fun processSignIn(login: String, password: String) {
         scope.launch {
-            showLoading()
             val result = appRepository.signIn(login, password)
-            println(result)
-//            handleResult(result)
         }
     }
 }

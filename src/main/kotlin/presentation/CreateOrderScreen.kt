@@ -8,7 +8,4 @@ class CreateOrderScreen: BaseScreen() {
         TODO("Not yet implemented")
     }
 
-    override fun displayHandledResult(result: PResult.Success<*>) {
-        TODO("Not yet implemented")
-    }
 }

@@ -17,7 +17,5 @@ sealed class PResult<out T : Any?>() {
         val message = exception.message ?: "Unknown error"
     }
 
-    object Loading : PResult<Nothing>()
-
     object Empty : PResult<Nothing>()
 }
