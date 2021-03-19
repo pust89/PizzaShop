@@ -2,11 +2,14 @@ package domain.repo
 
 import data.dto.PResult
 import domain.models.Pizza
+import domain.models.User
 
 interface IRepository {
 
-    fun getPizzaMenu(): PResult<List<Pizza>>
+    suspend fun signIn(login: String, password: String): PResult<User>
 
-    fun cleanUpResources()
+    suspend fun getPizzaMenu(): PResult<List<Pizza>>
+
+    suspend fun cleanUpResources()
 
 }

@@ -1,8 +1,12 @@
 package presentation
 
 import data.dto.PResult
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
 abstract class BaseScreen {
+    val coroutineJob = Job()
+    val scope = CoroutineScope(coroutineJob)
 
 
     fun handleResult(result: PResult<*>) {
@@ -23,6 +27,8 @@ abstract class BaseScreen {
         }
     }
 
+    abstract fun initView(): Unit
+
     abstract fun displayHandledResult(result: PResult.Success<*>)
 
     open fun showError(message: String) {
@@ -40,5 +46,9 @@ abstract class BaseScreen {
 
     open fun hideLoading() {
         println("Hide loading")
+    }
+
+    open fun destroy() {
+        coroutineJob.cancel()
     }
 }

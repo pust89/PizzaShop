@@ -6,10 +6,10 @@ import domain.models.User
 
 interface ILocalData {
 
-    fun signIn(login: String, password: String): PResult<User>
+    suspend fun signIn(login: String, password: String): PResult<User>
 
-    fun getAllPizzas(): PResult<List<Pizza>>
+    suspend fun getAllPizzas(): PResult<List<Pizza>>
 
-    fun cleanUpResources()
+    suspend fun cleanUpResources()
 
 }

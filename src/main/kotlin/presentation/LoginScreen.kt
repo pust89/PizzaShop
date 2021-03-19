@@ -17,28 +17,34 @@ import data.dto.PResult
 import data.repo.Repository
 import domain.models.Pizza
 import domain.repo.IRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 
-val MENU: IRepository = Repository
+val appRepository: IRepository = Repository
 
 
 fun main() {
     val loginScreen = LoginScreen()
     loginScreen.apply {
-        showLoading()
-        val result = MENU.getPizzaMenu()
-        loginScreen.handleResult(result)
+        scope.launch {
+            showLoading()
+            val result = appRepository.getPizzaMenu()
+            loginScreen.handleResult(result)
+        }
     }
 
 }
 
 
 class LoginScreen : BaseScreen() {
+
     init {
         initView()
     }
 
-    fun initView() = Window(title = "Compose for Desktop", size = IntSize(780, 640)) {
+    override fun initView(): Unit = Window(title = "Compose for Desktop", size = IntSize(780, 640)) {
         val count = remember { mutableStateOf(0) }
         MaterialTheme {
             Column(Modifier.fillMaxWidth(), Arrangement.spacedBy(5.dp)) {
@@ -59,6 +65,11 @@ class LoginScreen : BaseScreen() {
         }
     }
 
+//    private fun signIn(login: String, password: String) {
+//        appRepository.
+//    }
+
+    @Suppress("UNCHECKED_CAST")
     override fun displayHandledResult(result: PResult.Success<*>) {
         (result.data as? List<Pizza>)?.let { list ->
             list.forEach { pizza ->
