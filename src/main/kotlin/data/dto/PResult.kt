@@ -3,7 +3,7 @@ package data.dto
 /**
  * DTO class
  */
-sealed class PResult<out T : Any>() {
+sealed class PResult<out T : Any?>() {
 
     var isHandled = false
 

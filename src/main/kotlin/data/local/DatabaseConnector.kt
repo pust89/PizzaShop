@@ -1,6 +1,7 @@
 package data.local
 
 import domain.models.Pizza
+import domain.models.User
 import java.sql.*
 import java.util.*
 
@@ -60,29 +61,46 @@ object DatabaseConnector {
 
     private fun selectPizzaShopDatabase(connection: Connection) {
         val statement: Statement = connection.createStatement()
-        val resultset: ResultSet = statement.executeQuery("SHOW DATABASES;")
-        while (resultset.next()) {
-            println(resultset.getString("Database"))
+        val resultSet: ResultSet = statement.executeQuery("SHOW DATABASES;")
+        while (resultSet.next()) {
+            println(resultSet.getString("Database"))
+        }
+    }
+
+    /**
+     * Заходим в систему по логину и паролю.
+     */
+    fun signIn(login: String, password: String): User? {
+        val statement: Statement = connection.createStatement()
+        val resultSet: ResultSet = statement.executeQuery(WorkerTable.createLoginQuery(login, password))
+        return if (resultSet.fetchSize == 1) {
+            User(
+                id = resultSet.getInt(WorkerTable.COLUMN_ID),
+                firstName = resultSet.getString(WorkerTable.COLUMN_FIRST_NAME),
+                secondName = resultSet.getString(WorkerTable.COLUMN_SECOND_NAME)
+            )
+        } else {
+            null
         }
     }
 
     fun getPizzaMenu(): List<Pizza> {
-            val statement: Statement = connection.createStatement()
-            val resultSet: ResultSet = statement.executeQuery(PizzaQuery.SELECT_ALL)
-            val resultLit = mutableListOf<Pizza>()
-            while (resultSet.next()) {
-                resultSet.apply {
-                    resultLit.add(
-                        Pizza(
-                            id = getInt(PizzaTable.COLUMN_ID),
-                            name = getString(PizzaTable.COLUMN_NAME),
-                            imageUrl = getString(PizzaTable.COLUMN_IMAGE),
-                            price = getInt(PizzaTable.COLUMN_PRICE)
-                        )
+        val statement: Statement = connection.createStatement()
+        val resultSet: ResultSet = statement.executeQuery(PizzaTable.QUERY_SELECT_ALL)
+        val resultLit = mutableListOf<Pizza>()
+        while (resultSet.next()) {
+            resultSet.apply {
+                resultLit.add(
+                    Pizza(
+                        id = getInt(PizzaTable.COLUMN_ID),
+                        name = getString(PizzaTable.COLUMN_NAME),
+                        imageUrl = getString(PizzaTable.COLUMN_IMAGE),
+                        price = getInt(PizzaTable.COLUMN_PRICE)
                     )
-                }
-
+                )
             }
-            return resultLit
+
+        }
+        return resultLit
     }
 }

@@ -19,8 +19,6 @@ import domain.models.Pizza
 import domain.repo.IRepository
 
 
-
-
 val MENU: IRepository = Repository
 
 
@@ -36,6 +34,9 @@ fun main() {
 
 
 class LoginScreen : BaseScreen() {
+    init {
+        initView()
+    }
 
     fun initView() = Window(title = "Compose for Desktop", size = IntSize(780, 640)) {
         val count = remember { mutableStateOf(0) }
@@ -66,7 +67,4 @@ class LoginScreen : BaseScreen() {
         }
     }
 
-    init {
-        initView()
-    }
 }
