@@ -14,7 +14,7 @@ object Repository : IRepository {
     private val localData: ILocalData = LocalData()
 
     override suspend fun signIn(login: String, password: String): PResult<User> {
-        delay(3000)
+        delay(1000)
         return localData.signIn(login, password)
     }
 
