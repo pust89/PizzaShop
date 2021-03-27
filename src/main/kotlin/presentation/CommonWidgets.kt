@@ -11,6 +11,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
+/**
+ * Отображает заголовок
+ */
 @Composable
 fun showTitleFiled(title: MutableState<String>) {
     Column(
@@ -25,6 +28,9 @@ fun showTitleFiled(title: MutableState<String>) {
     }
 }
 
+/**
+ * Отображает загрузка в приложении
+ */
 @Composable
 fun showDownloading(isLoading: MutableState<Boolean>) {
     if (isLoading.value) {
@@ -37,6 +43,9 @@ fun showDownloading(isLoading: MutableState<Boolean>) {
     }
 }
 
+/**
+ * Отображает ошибки в приложении
+ */
 @Composable
 fun showErrorFiled(error: MutableState<String>) {
     Row(

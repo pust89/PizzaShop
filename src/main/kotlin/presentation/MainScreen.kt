@@ -10,14 +10,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import data.dto.PResult
-import data.repo.Repository
+import domain.PResult
+import domain.Repository
 import domain.models.*
-import domain.repo.IRepository
 import kotlinx.coroutines.launch
 
 
-val appRepository: IRepository = Repository
+val appRepository = Repository
 
 
 fun main() {
@@ -29,11 +28,13 @@ class MainScreen : BaseScreen() {
     init {
         initView()
     }
-
-    override fun initView(): Unit = Window(title = "Compose for Desktop", size = IntSize(1400, 900)) {
+    /**
+     * Метод управляет всеми экранами приложения
+     */
+    override fun initView(): Unit = Window(title = "Администратор пицерии", size = IntSize(1400, 900)) {
         MaterialTheme {
             // common fields
-            val titleScreenLiveData = remember { mutableStateOf<String>("Welcome to Pizza App of our restaurant.") }
+            val titleScreenLiveData = remember { mutableStateOf<String>("Добро подаловать в приложение нашего пице-ресторана") }
             val errorLiveData = remember { mutableStateOf<String>("") }
             val loadingLiveData = remember { mutableStateOf<Boolean>(false) }
 

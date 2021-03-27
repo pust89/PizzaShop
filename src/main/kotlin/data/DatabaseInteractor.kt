@@ -1,11 +1,16 @@
-package data.local
+package data
 
+import data.local.PizzaTable
+import data.local.WorkerTable
 import domain.models.Pizza
 import domain.models.User
 import java.sql.*
 import java.util.*
 
-object DatabaseConnector {
+/**
+ * Класс отвечающий за взаимодействие с базой данных
+ */
+object DatabaseInteractor {
     private const val USERNAME = "admin"
     private const val PASSWORD = "d1d2d3d4"
     private const val MY_SQL_DATABASE_URL = "jdbc:mysql://127.0.0.1:3306/pizza_shop"
@@ -86,28 +91,15 @@ object DatabaseConnector {
         }
     }
 
+    /**
+     * Возвращает список всех пицц (меню)
+     */
     fun getPizzaMenu(): List<Pizza> {
         val statement: Statement = connection.createStatement()
         val resultSet: ResultSet = statement.executeQuery(PizzaTable.QUERY_SELECT_ALL)
         val resultLit = mutableListOf<Pizza>()
         while (resultSet.next()) {
             resultSet.apply {
-                resultLit.add(
-                    Pizza(
-                        id = getInt(PizzaTable.COLUMN_ID),
-                        name = getString(PizzaTable.COLUMN_NAME),
-                        imageUrl = getString(PizzaTable.COLUMN_IMAGE),
-                        price = getInt(PizzaTable.COLUMN_PRICE)
-                    )
-                )
-                resultLit.add(
-                    Pizza(
-                        id = getInt(PizzaTable.COLUMN_ID),
-                        name = getString(PizzaTable.COLUMN_NAME),
-                        imageUrl = getString(PizzaTable.COLUMN_IMAGE),
-                        price = getInt(PizzaTable.COLUMN_PRICE)
-                    )
-                )
                 resultLit.add(
                     Pizza(
                         id = getInt(PizzaTable.COLUMN_ID),

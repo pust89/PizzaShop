@@ -14,7 +14,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
-
+/**
+ * Агрегирует методы по созданию экрана "Вход в приложение"
+ */
 @Composable
 fun loginScreen(
     isInSystem: MutableState<Boolean>,
@@ -31,13 +33,15 @@ fun loginScreen(
                 onClick = {
                     processSignIn()
                 }) {
-                Text("SignIn")
+                Text("Войти")
             }
         }
     }
 }
 
-
+/**
+ * Поле ввода логина
+ */
 @Composable
 fun showLoginInputField(login: MutableState<String>) {
     Column(Modifier.fillMaxWidth()) {
@@ -54,6 +58,9 @@ fun showLoginInputField(login: MutableState<String>) {
     }
 }
 
+/**
+ * Поле ввода пароля
+ */
 @Composable
 fun showPasswordInputField(password: MutableState<String>) {
     Column(Modifier.fillMaxWidth(), Arrangement.spacedBy(5.dp)) {

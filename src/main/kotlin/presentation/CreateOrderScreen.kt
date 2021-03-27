@@ -18,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import domain.models.PizzaItem
 import domain.models.User
 
+/**
+ * Агрегирует методы по созданию экрана "Создания заказа"
+ */
 @Composable
 fun createOrderScreen(
     isInSystem: MutableState<Boolean>,
@@ -50,32 +53,44 @@ fun createOrderScreen(
     }
 }
 
-
+/**
+ * Метод добавляет отображение залогиненного пользователя
+ */
 @Composable
 fun displayUserInfo(user: MutableState<User?>) {
     Row(Modifier.fillMaxWidth().padding(top = 10.dp)) {
         user.value?.run {
             Text(
                 fontSize = TextUnit.Companion.Sp(25),
-                text = "Your id:$id $firstName $secondName",
+                text = "Пользователь: id=$id, $firstName $secondName",
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
     }
 }
 
+/**
+ * Метод добавляет заголовки в отображаемую таблицу пицц.
+ * Элемент содержит в себе:
+ * название,
+ * цена за 1 шт.,
+ * кнопка + (увеличиваетколичество)
+ * количество пицц,
+ * кнопка - (уменьшает количество)
+ * стоимость (количество * цена за 1 шт.)
+ */
 @Composable
 fun createOrderColumnsNames() {
     Row(Modifier.width(800.dp).padding(top = 10.dp).background(Color.Gray), Arrangement.Start) {
         Text(
             fontSize = TextUnit.Companion.Sp(25),
-            text = "Name",
+            text = "Имя",
             modifier = Modifier.align(Alignment.CenterVertically).width(200.dp),
         )
 
         Text(
             fontSize = TextUnit.Companion.Sp(25),
-            text = "Price",
+            text = "Цена",
             modifier = Modifier.align(Alignment.CenterVertically).width(100.dp).background(Color.Green),
             textAlign = TextAlign.Center,
         )
@@ -88,7 +103,7 @@ fun createOrderColumnsNames() {
 
         Text(
             fontSize = TextUnit.Companion.Sp(25),
-            text = "Count",
+            text = "Кол-во",
             modifier = Modifier.align(Alignment.CenterVertically).width(100.dp).background(Color.Cyan),
             textAlign = TextAlign.Center,
         )
@@ -100,7 +115,7 @@ fun createOrderColumnsNames() {
         )
         Text(
             fontSize = TextUnit.Companion.Sp(25),
-            text = "Cost",
+            text = "Стоимость",
             modifier = Modifier.align(Alignment.CenterVertically).width(200.dp).background(Color.Green),
             textAlign = TextAlign.Center
         )
@@ -108,6 +123,16 @@ fun createOrderColumnsNames() {
     }
 }
 
+/**
+ * Метод добавляет запись в отображаемую таблицу пицц.
+ * Элемент содержит в себе:
+ * название,
+ * цена за 1 шт.,
+ * кнопка + (увеличиваетколичество)
+ * количество пицц,
+ * кнопка - (уменьшает количество)
+ * стоимость (количество * цена за 1 шт.)
+ */
 @Composable
 fun addPizzaItemWithCounter(pizzaItem: MutableState<PizzaItem>) {
     val pizza: PizzaItem = pizzaItem.value

@@ -1,5 +1,8 @@
 package data.local
 
+/**
+ * Файл содержит описания всех таблиц в базе данных
+ */
 object PizzaTable {
     const val TABLE_NAME = "menu_pizza"
     const val COLUMN_ID = "id"
