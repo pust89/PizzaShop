@@ -29,12 +29,13 @@ fun createOrderScreen(
     pizzas: List<PizzaItem>
 ) {
     if (!isOrderCreate.value && isInSystem.value) {
-        val tempList: MutableList<MutableState<PizzaItem>> = mutableListOf<MutableState<PizzaItem>>()
-        displayWorkerInfo(worker)
 
+        val mutablePizzas: MutableList<MutableState<PizzaItem>> = mutableListOf<MutableState<PizzaItem>>()
+
+        displayWorkerInfo(worker)
         Row(Modifier.fillMaxWidth().fillMaxHeight()) {
-            createMenuColumn(pizzas, worker, tempList)
-            createRawOrderColumn(pizzas, worker, tempList)
+            createMenuColumn(pizzas, worker, mutablePizzas)
+            createRawOrderColumn(pizzas, worker, mutablePizzas)
         }
 
     }
@@ -61,9 +62,14 @@ fun createMenuColumn(
                 addPizzaItemWithCounter(observablePizzaItem)
             }
 
-            Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(top=25.dp),
+            Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 25.dp),
                 onClick = {
-                    //   processSignIn()
+                    createRawOrder(worker = worker.value!!,
+                        selectedPizzas = tempList.map {
+                            it.value
+                        }.filter {
+                            it.count > 0
+                        })
                 }) {
                 Text("Создать заказ")
             }
@@ -76,12 +82,11 @@ fun createMenuColumn(
  */
 @Composable
 fun displayWorkerInfo(worker: MutableState<Worker?>) {
-    Column (Modifier.fillMaxWidth().padding(top = 10.dp)) {
+    Column(Modifier.fillMaxWidth().padding(top = 10.dp)) {
         worker.value?.run {
             Text(
                 fontSize = TextUnit.Companion.Sp(25),
                 text = "Работник: id=$id, $firstName $secondName",
-              //  modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
     }
@@ -181,6 +186,8 @@ fun addPizzaItemWithCounter(pizzaItem: MutableState<PizzaItem>) {
                         if (it > 0) {
                             count.value = it - 1
                             cost.value = count.value * price
+                            this.cost = cost.value
+                            this.count = count.value
                         }
                     }
                 }) {
@@ -198,6 +205,8 @@ fun addPizzaItemWithCounter(pizzaItem: MutableState<PizzaItem>) {
                 onClick = {
                     count.value = count.value + 1
                     cost.value = count.value * price
+                    this.cost = cost.value
+                    this.count = count.value
                 }) {
                 Text("+")
             }

@@ -11,6 +11,17 @@ import androidx.compose.ui.unit.dp
 import domain.models.PizzaItem
 import domain.models.Worker
 
+
+fun createRawOrder(
+    worker: Worker,
+    selectedPizzas: List<PizzaItem>
+) {
+    println(worker)
+    selectedPizzas.forEach {
+    println(it)
+    }
+}
+
 /**
  * Отображает не подтвержденный заказ
  */
