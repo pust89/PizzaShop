@@ -2,7 +2,7 @@ package domain
 
 import data.DatabaseInteractor
 import domain.models.Pizza
-import domain.models.User
+import domain.models.Worker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -13,7 +13,7 @@ object Repository {
 
     private val databaseInteractor: DatabaseInteractor = DatabaseInteractor
 
-    suspend fun signIn(login: String, password: String): PResult<User> {
+    suspend fun signIn(login: String, password: String): PResult<Worker> {
         return withContext(Dispatchers.IO) {
             try {
                 databaseInteractor.signIn(login, password)?.let {

@@ -3,7 +3,7 @@ package data
 import data.local.PizzaTable
 import data.local.WorkerTable
 import domain.models.Pizza
-import domain.models.User
+import domain.models.Worker
 import java.sql.*
 import java.util.*
 
@@ -75,13 +75,13 @@ object DatabaseInteractor {
     /**
      * Заходим в систему по логину и паролю.
      */
-    fun signIn(login: String, password: String): User? {
+    fun signIn(login: String, password: String): Worker? {
         val statement: Statement = connection.createStatement()
         val loginQuery = WorkerTable.createLoginQuery(login, password)
         println(loginQuery)
         val resultSet: ResultSet = statement.executeQuery(loginQuery)
         return if (resultSet.next()) {
-            User(
+            Worker(
                 id = resultSet.getInt(WorkerTable.COLUMN_ID),
                 firstName = resultSet.getString(WorkerTable.COLUMN_FIRST_NAME),
                 secondName = resultSet.getString(WorkerTable.COLUMN_SECOND_NAME)

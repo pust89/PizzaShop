@@ -42,7 +42,7 @@ class MainScreen : BaseScreen() {
             val loginLiveData = remember { mutableStateOf<String>("login1") }
             val passwordLiveData = remember { mutableStateOf<String>("password1") }
             val isInSystem = remember { mutableStateOf<Boolean>(false) }
-            val user = remember { mutableStateOf<User?>(null) }
+            val worker = remember { mutableStateOf<Worker?>(null) }
 
             // create order
             val isOrderCreate = remember { mutableStateOf<Boolean>(false) }
@@ -67,14 +67,15 @@ class MainScreen : BaseScreen() {
 
 
             fun handledSuccessResult(result: PResult.Success<*>) {
-                (result.data as? User)?.let {
+                (result.data as? Worker)?.let {
                     println(it)
-                    user.value = it
+                    worker.value = it
                     isInSystem.value = true
                     event.value = Event.CreateOrder
                 }
                 (result.data as? List<Pizza>)?.let {
                     println(it)
+                    titleScreenLiveData.value = "Соберите заказ"
                     pizzaItems.value = it.convertTo()
                 }
             }
@@ -139,12 +140,14 @@ class MainScreen : BaseScreen() {
             }
 
             observeEvent(event)
+
+
             @Composable
             fun observePizzas(pizzasItems: MutableState<List<PizzaItem>>) {
                 createOrderScreen(
                     isInSystem = isInSystem,
                     isOrderCreate = isOrderCreate,
-                    user = user,
+                    worker = worker,
                     pizzas = pizzaItems.value
                 )
             }

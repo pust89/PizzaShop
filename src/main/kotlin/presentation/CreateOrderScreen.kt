@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import domain.models.PizzaItem
-import domain.models.User
+import domain.models.Worker
 
 /**
  * Агрегирует методы по созданию экрана "Создания заказа"
@@ -25,29 +25,47 @@ import domain.models.User
 fun createOrderScreen(
     isInSystem: MutableState<Boolean>,
     isOrderCreate: MutableState<Boolean>,
-    user: MutableState<User?>,
+    worker: MutableState<Worker?>,
     pizzas: List<PizzaItem>
 ) {
     if (!isOrderCreate.value && isInSystem.value) {
-        val tempList = mutableListOf<MutableState<PizzaItem>>()
+        val tempList: MutableList<MutableState<PizzaItem>> = mutableListOf<MutableState<PizzaItem>>()
+        displayWorkerInfo(worker)
 
-        Column(Modifier.width(800.dp).padding(top = 50.dp).background(Color.Magenta)) {
-            displayUserInfo(user)
-            createOrderColumnsNames()
-            ScrollableColumn(Modifier.fillMaxWidth().fillMaxHeight().padding(top = 10.dp), isScrollEnabled = true) {
+        Row(Modifier.fillMaxWidth().fillMaxHeight()) {
+            createMenuColumn(pizzas, worker, tempList)
+            createRawOrderColumn(pizzas, worker, tempList)
+        }
 
-//            Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-//                onClick = {
-////                    processSignIn()
-//                }) {
-//                Text("Create order")
-//            }
-                pizzas.forEach {
-                    val observablePizzaItem: MutableState<PizzaItem> = remember { mutableStateOf<PizzaItem>(it) }
-                    tempList.add(observablePizzaItem)
-                    addPizzaItemWithCounter(observablePizzaItem)
-                }
+    }
+}
 
+/**
+ * Создается колонка меню, где отображается залогиненный пользователь,
+ * заголовки таблицы меню и само меню сос счетчиками.
+ */
+@Composable
+fun createMenuColumn(
+    pizzas: List<PizzaItem>,
+    worker: MutableState<Worker?>,
+    tempList: MutableList<MutableState<PizzaItem>>
+) {
+    Box(Modifier.width(800.dp).padding(top = 75.dp).background(Color.LightGray)) {
+
+        createOrderColumnsNames()
+        ScrollableColumn(Modifier.fillMaxWidth().fillMaxHeight().padding(top = 10.dp), isScrollEnabled = true) {
+
+            pizzas.forEach {
+                val observablePizzaItem: MutableState<PizzaItem> = remember { mutableStateOf<PizzaItem>(it) }
+                tempList.add(observablePizzaItem)
+                addPizzaItemWithCounter(observablePizzaItem)
+            }
+
+            Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(top=25.dp),
+                onClick = {
+                    //   processSignIn()
+                }) {
+                Text("Создать заказ")
             }
         }
     }
@@ -57,17 +75,18 @@ fun createOrderScreen(
  * Метод добавляет отображение залогиненного пользователя
  */
 @Composable
-fun displayUserInfo(user: MutableState<User?>) {
-    Row(Modifier.fillMaxWidth().padding(top = 10.dp)) {
-        user.value?.run {
+fun displayWorkerInfo(worker: MutableState<Worker?>) {
+    Column (Modifier.fillMaxWidth().padding(top = 10.dp)) {
+        worker.value?.run {
             Text(
                 fontSize = TextUnit.Companion.Sp(25),
-                text = "Пользователь: id=$id, $firstName $secondName",
-                modifier = Modifier.align(Alignment.CenterVertically),
+                text = "Работник: id=$id, $firstName $secondName",
+              //  modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
     }
 }
+
 
 /**
  * Метод добавляет заголовки в отображаемую таблицу пицц.
@@ -81,7 +100,8 @@ fun displayUserInfo(user: MutableState<User?>) {
  */
 @Composable
 fun createOrderColumnsNames() {
-    Row(Modifier.width(800.dp).padding(top = 10.dp).background(Color.Gray), Arrangement.Start) {
+
+    Row(Modifier.width(800.dp).padding(top = 10.dp, bottom = 10.dp).background(Color.Gray), Arrangement.Start) {
         Text(
             fontSize = TextUnit.Companion.Sp(25),
             text = "Имя",
