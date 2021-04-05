@@ -1,4 +1,4 @@
-package presentation
+package presentation.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -7,25 +7,31 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import domain.models.Worker
 
+val worker = mutableStateOf<Worker?>(null)
+
+val loginLiveData = mutableStateOf<String>("login1")
+val passwordLiveData = mutableStateOf<String>("password1")
+val isInSystem = mutableStateOf<Boolean>(false)
+val isNeedLogout = mutableStateOf<Boolean>(false)
 /**
  * Агрегирует методы по созданию экрана "Вход в приложение"
  */
 @Composable
 fun loginScreen(
-    isInSystem: MutableState<Boolean>,
-    loginLiveData: MutableState<String>,
-    passwordLiveData: MutableState<String>,
     processSignIn: () -> Unit
 ) {
     if (!isInSystem.value) {
         Column(Modifier.fillMaxWidth().fillMaxHeight().padding(top = 25.dp), Arrangement.spacedBy(50.dp)) {
+            isNeedLogout.value = false
 
             showLoginInputField(loginLiveData)
             showPasswordInputField(passwordLiveData)

@@ -1,5 +1,5 @@
 package domain.models
 
 enum class Event {
-   IDLE, SignIn, CreateOrder
+   IDLE, SignIn, CreateOrder, OrderCreated
 }

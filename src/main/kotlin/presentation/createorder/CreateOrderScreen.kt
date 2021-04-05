@@ -1,4 +1,4 @@
-package presentation
+package presentation.createorder
 
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
@@ -17,25 +17,28 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import domain.models.PizzaItem
 import domain.models.Worker
+import presentation.base.titleLiveData
+
+val pizzaItemsMenu = mutableStateOf<List<PizzaItem>>(emptyList())
+val populateRawOrderColumn = mutableStateOf<Boolean>(false)
+val isNeedCreateOrder = mutableStateOf<Boolean>(false)
 
 /**
  * Агрегирует методы по созданию экрана "Создания заказа"
  */
 @Composable
 fun createOrderScreen(
-    isInSystem: MutableState<Boolean>,
-    isOrderCreate: MutableState<Boolean>,
+    isNeedCreateOrder: MutableState<Boolean>,
     worker: MutableState<Worker?>,
     pizzas: List<PizzaItem>
 ) {
-    if (!isOrderCreate.value && isInSystem.value) {
+    if (isNeedCreateOrder.value) {
+        titleLiveData.value = "Соберите заказ"
 
         val mutablePizzas: MutableList<MutableState<PizzaItem>> = mutableListOf<MutableState<PizzaItem>>()
-
-        displayWorkerInfo(worker)
         Row(Modifier.fillMaxWidth().fillMaxHeight()) {
             createMenuColumn(pizzas, worker, mutablePizzas)
-            createRawOrderColumn(pizzas, worker, mutablePizzas)
+            createRawOrderColumn(populateRawOrderColumn)
         }
 
     }
@@ -51,8 +54,7 @@ fun createMenuColumn(
     worker: MutableState<Worker?>,
     tempList: MutableList<MutableState<PizzaItem>>
 ) {
-    Box(Modifier.width(800.dp).padding(top = 75.dp).background(Color.LightGray)) {
-
+    Box(Modifier.width(800.dp).background(Color.LightGray)) {
         createOrderColumnsNames()
         ScrollableColumn(Modifier.fillMaxWidth().fillMaxHeight().padding(top = 10.dp), isScrollEnabled = true) {
 
@@ -64,30 +66,21 @@ fun createMenuColumn(
 
             Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 25.dp),
                 onClick = {
-                    createRawOrder(worker = worker.value!!,
-                        selectedPizzas = tempList.map {
+                    selectedPizzaItems.run {
+                        value = emptyList()
+                        value = tempList.map {
                             it.value
                         }.filter {
                             it.count > 0
-                        })
+                        }
+                        if (value.isNotEmpty()) {
+                            populateRawOrderColumn.value = true
+                        }
+                    }
+
                 }) {
                 Text("Создать заказ")
             }
-        }
-    }
-}
-
-/**
- * Метод добавляет отображение залогиненного пользователя
- */
-@Composable
-fun displayWorkerInfo(worker: MutableState<Worker?>) {
-    Column(Modifier.fillMaxWidth().padding(top = 10.dp)) {
-        worker.value?.run {
-            Text(
-                fontSize = TextUnit.Companion.Sp(25),
-                text = "Работник: id=$id, $firstName $secondName",
-            )
         }
     }
 }
