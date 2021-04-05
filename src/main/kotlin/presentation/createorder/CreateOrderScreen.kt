@@ -17,10 +17,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import domain.models.PizzaItem
 import domain.models.Worker
+import presentation.base.MyColors.MAIN_BACKGROUND
 import presentation.base.titleLiveData
 
 val pizzaItemsMenu = mutableStateOf<List<PizzaItem>>(emptyList())
-val populateRawOrderColumn = mutableStateOf<Boolean>(false)
 val isNeedCreateOrder = mutableStateOf<Boolean>(false)
 
 /**
@@ -38,7 +38,7 @@ fun createOrderScreen(
         val mutablePizzas: MutableList<MutableState<PizzaItem>> = mutableListOf<MutableState<PizzaItem>>()
         Row(Modifier.fillMaxWidth().fillMaxHeight()) {
             createMenuColumn(pizzas, worker, mutablePizzas)
-            createRawOrderColumn(populateRawOrderColumn)
+            createRawOrderColumn()
         }
 
     }
@@ -54,7 +54,7 @@ fun createMenuColumn(
     worker: MutableState<Worker?>,
     tempList: MutableList<MutableState<PizzaItem>>
 ) {
-    Box(Modifier.width(800.dp).background(Color.LightGray)) {
+    Box(Modifier.width(800.dp).background(MAIN_BACKGROUND)) {
         createOrderColumnsNames()
         ScrollableColumn(Modifier.fillMaxWidth().fillMaxHeight().padding(top = 10.dp), isScrollEnabled = true) {
 
@@ -99,7 +99,7 @@ fun createMenuColumn(
 @Composable
 fun createOrderColumnsNames() {
 
-    Row(Modifier.width(800.dp).padding(top = 10.dp, bottom = 10.dp).background(Color.Gray), Arrangement.Start) {
+    Row(Modifier.width(800.dp).padding( bottom = 10.dp).background(Color.Gray), Arrangement.Start) {
         Text(
             fontSize = TextUnit.Companion.Sp(25),
             text = "Имя",

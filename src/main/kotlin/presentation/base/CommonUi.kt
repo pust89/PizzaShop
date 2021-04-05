@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import presentation.base.MyColors.MAIN_BACKGROUND
 import presentation.base.errorLiveData
 import presentation.base.loadingLiveData
 import presentation.base.titleLiveData
@@ -23,7 +24,7 @@ import presentation.login.worker
 @Composable
 fun customizeTitleDisplay(processSignOut: () -> Unit, processCreateNewOrder: () -> Unit) {
     Box(
-        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+        modifier = Modifier.fillMaxWidth().wrapContentHeight().background(MAIN_BACKGROUND),
     ) {
         Text(
             fontSize = TextUnit.Companion.Sp(25),
@@ -58,7 +59,7 @@ fun customizeTitleDisplay(processSignOut: () -> Unit, processCreateNewOrder: () 
 fun customizeDownloadingDisplay() {
     if (loadingLiveData.value) {
         Row(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            modifier = Modifier.fillMaxWidth().fillMaxHeight().background(MAIN_BACKGROUND),
             horizontalArrangement = Arrangement.Center
         ) {
             CircularProgressIndicator()
@@ -72,7 +73,7 @@ fun customizeDownloadingDisplay() {
 @Composable
 fun customizeErrorDisplay() {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(5.dp),
+        modifier = Modifier.fillMaxWidth().background(MAIN_BACKGROUND),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
@@ -91,7 +92,7 @@ fun customizeErrorDisplay() {
 @Composable
 fun customizeWorkerDisplay() {
     if (worker.value != null) {
-        Column(Modifier.fillMaxWidth().padding(top = 10.dp).wrapContentHeight().background(Color.Magenta)) {
+        Column(Modifier.fillMaxWidth().wrapContentHeight().background(Color.Magenta)) {
             worker.value?.run {
                 Text(
                     fontSize = TextUnit.Companion.Sp(25),

@@ -12,15 +12,16 @@ import androidx.compose.ui.unit.dp
 import domain.models.PizzaItem
 
 val selectedPizzaItems = mutableStateOf<List<PizzaItem>>(emptyList())
+val populateRawOrderColumn = mutableStateOf<Boolean>(false)
 
 /**
  * Отображает не подтвержденный заказ
  */
 @Composable
-fun createRawOrderColumn(populateState: MutableState<Boolean>) {
-    Box(Modifier.width(600.dp).background(Color.Red)) {
+fun createRawOrderColumn() {
+    Box(Modifier.width(600.dp).background(Color.LightGray)) {
         ScrollableColumn(Modifier.fillMaxWidth().fillMaxHeight().padding(top = 10.dp), isScrollEnabled = true) {
-            if (populateState.value) {
+            if (populateRawOrderColumn.value) {
                 selectedPizzaItems.value.forEach {
                     println(it.name + it.count)
                 }

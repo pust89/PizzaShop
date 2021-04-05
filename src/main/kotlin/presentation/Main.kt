@@ -1,6 +1,7 @@
 package presentation
 
 import androidx.compose.desktop.Window
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import domain.models.Pizza
 import domain.models.Worker
 import domain.models.convertTo
 import presentation.base.MainPresenter
+import presentation.base.MyColors
 import presentation.createorder.createOrderScreen
 import presentation.createorder.isNeedCreateOrder
 import presentation.createorder.pizzaItemsMenu
@@ -33,7 +35,7 @@ class MainScreen : MainPresenter() {
     override fun initScreen() {
         Window(title = "Администратор пицерии", size = IntSize(1400, 900)) {
             MaterialTheme {
-                Column(Modifier.fillMaxWidth().fillMaxHeight()) {
+                Column(Modifier.fillMaxWidth().fillMaxHeight().background(MyColors.MAIN_BACKGROUND)) {
                     customizeTitleDisplay(
                         processSignOut = { processSignOut() },
                         processCreateNewOrder = { processCreateNewOrder() })
