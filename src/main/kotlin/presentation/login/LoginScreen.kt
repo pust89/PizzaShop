@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import domain.models.Worker
 
-val worker = mutableStateOf<Worker?>(null)
+val currentWorker = mutableStateOf<Worker?>(null)
 
 val loginLiveData = mutableStateOf<String>("login1")
 val passwordLiveData = mutableStateOf<String>("password1")

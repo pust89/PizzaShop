@@ -30,5 +30,7 @@ inline fun <reified T : Throwable> T.toErrorResult(): PResult.Error =
 
 
 inline fun <reified T : Any> Any.successResult(data: T) = PResult.Success(data)
-fun Any.errorResult(exception: Throwable) = PResult.Error(exception)
+fun Any.errorResult(exception: Throwable) = PResult.Error(exception).also {
+    println(exception.printStackTrace())
+}
 fun Any?.emptyResult() = PResult.Empty

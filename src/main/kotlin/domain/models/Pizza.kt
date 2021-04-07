@@ -1,30 +1,57 @@
 package domain.models
 
 /**
- * Local model
+ * Data model
  */
-data class Pizza(
+data class PizzaDatabase(
     val id: Int,
     val name: String,
     val imageUrl: String,
     val price: Int
 )
 
-fun Pizza.convertTo(): PizzaItem {
-    return PizzaItem(
-        id = this.id,
-        image = this.imageUrl,
-        name = this.name,
-        price = this.price,
-        count = 0,
-        cost = 0
-    )
+
+fun List<PizzaDatabase>.convertToPizzaItem(): List<PizzaItem> {
+    return this.map {
+        PizzaItem(
+            id = it.id,
+            image = it.imageUrl,
+            name = it.name,
+            price = it.price,
+            count = 0,
+            cost = 0
+        )
+    }
 }
 
-fun List<Pizza>.convertTo(): List<PizzaItem> {
-    return this.map {
-        it.convertTo()
+fun List<PizzaItem>.calculateBill(): Int {
+    return if (isNotEmpty()) {
+        var temp = 0
+        forEach {
+            temp += it.cost
+        }
+        temp
+    } else 0
+}
+
+fun List<PizzaItem>.convertToOrderedPizza(): List<OrderedPizza> {
+    return map {
+        OrderedPizza(
+            name = it.name,
+            quantity = it.count,
+            cost = it.cost
+        )
     }
+}
+
+fun List<OrderedPizza>.toStringValue(): String {
+    return if (isNotEmpty()) {
+        var temp = ""
+        forEach {
+            temp += "$it\n"
+        }
+        temp
+    } else ""
 }
 
 /**

@@ -1,8 +1,10 @@
 package data
 
+import data.local.OrderTable
 import data.local.PizzaTable
 import data.local.WorkerTable
-import domain.models.Pizza
+import domain.models.OrderDatabase
+import domain.models.PizzaDatabase
 import domain.models.Worker
 import java.sql.*
 import java.util.*
@@ -23,7 +25,7 @@ object DatabaseInteractor {
     }
 
     private val connection: Connection by lazy {
-        Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance()
+        val x = Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance()
         DriverManager.getConnection(MY_SQL_DATABASE_URL, connectionProperties)
     }
 
@@ -94,14 +96,14 @@ object DatabaseInteractor {
     /**
      * Возвращает список всех пицц (меню)
      */
-    fun getPizzaMenu(): List<Pizza> {
+    fun getPizzaMenu(): List<PizzaDatabase> {
         val statement: Statement = connection.createStatement()
         val resultSet: ResultSet = statement.executeQuery(PizzaTable.QUERY_SELECT_ALL)
-        val resultLit = mutableListOf<Pizza>()
+        val resultLit = mutableListOf<PizzaDatabase>()
         while (resultSet.next()) {
             resultSet.apply {
                 resultLit.add(
-                    Pizza(
+                    PizzaDatabase(
                         id = getInt(PizzaTable.COLUMN_ID),
                         name = getString(PizzaTable.COLUMN_NAME),
                         imageUrl = getString(PizzaTable.COLUMN_IMAGE),
@@ -112,5 +114,16 @@ object DatabaseInteractor {
 
         }
         return resultLit
+    }
+
+    /**
+     * Сохраняет новый заказ
+     */
+    fun saveNewOrderMenu(order: OrderDatabase): Boolean {
+        val statement: Statement = connection.createStatement()
+        val insertOrderQuery = order.run {
+            OrderTable.createSaveOrderQuery(workerId, orderPizzas, bill, date)
+        }
+        return statement.execute(insertOrderQuery)
     }
 }

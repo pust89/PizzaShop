@@ -3,12 +3,13 @@ package presentation.base
 import androidx.compose.runtime.mutableStateOf
 import domain.PResult
 import domain.Repository
+import domain.models.OrderItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import presentation.createorder.isNeedCreateOrder
-import presentation.createorder.populateRawOrderColumn
+import presentation.createorder.isNeedConfirmOrder
 import presentation.createorder.selectedPizzaItems
 import presentation.login.*
 
@@ -17,9 +18,9 @@ val errorLiveData = mutableStateOf<String>("")
 val loadingLiveData = mutableStateOf<Boolean>(false)
 
 
-abstract class MainPresenter {
+abstract class BaseViewController {
 
-    private val appRepository = Repository
+    val appRepository = Repository
 
     private val coroutineJob = Job()
     val scope = CoroutineScope(coroutineJob)
@@ -77,9 +78,10 @@ abstract class MainPresenter {
             delay(1000)
             loginLiveData.value = ""
             passwordLiveData.value = ""
+            isNeedConfirmOrder.value = false
             isInSystem.value = false
             isNeedLogout.value = false
-            worker.value = null
+            currentWorker.value = null
             titleLiveData.value = "Добро подаловать в приложение нашего пице-ресторана"
             hideLoading()
         }
@@ -89,11 +91,23 @@ abstract class MainPresenter {
     fun processCreateNewOrder() {
         scope.launch {
             isNeedCreateOrder.value = false
-            populateRawOrderColumn.value = false
+            isNeedConfirmOrder.value = false
             selectedPizzaItems.value = emptyList()
             showLoading()
             delay(1000)
             downloadMenu()
+        }
+    }
+
+    fun saveNewOrder(orderItem: OrderItem) {
+        println("Save newOrderInvoked")
+        scope.launch {
+            showLoading()
+            delay(1000)
+            isNeedCreateOrder.value = false
+            isNeedConfirmOrder.value = false
+            selectedPizzaItems.value = emptyList()
+            handleResult(appRepository.saveNewOrder(orderItem))
         }
     }
 

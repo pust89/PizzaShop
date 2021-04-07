@@ -15,10 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import domain.models.OrderItem
 import domain.models.PizzaItem
-import domain.models.Worker
+import presentation.base.MyColors
 import presentation.base.MyColors.MAIN_BACKGROUND
 import presentation.base.titleLiveData
+import java.util.*
 
 val pizzaItemsMenu = mutableStateOf<List<PizzaItem>>(emptyList())
 val isNeedCreateOrder = mutableStateOf<Boolean>(false)
@@ -29,16 +31,16 @@ val isNeedCreateOrder = mutableStateOf<Boolean>(false)
 @Composable
 fun createOrderScreen(
     isNeedCreateOrder: MutableState<Boolean>,
-    worker: MutableState<Worker?>,
-    pizzas: List<PizzaItem>
+    pizzas: List<PizzaItem>,
+    saveNewOrder: (orderItem: OrderItem) -> Unit
 ) {
     if (isNeedCreateOrder.value) {
         titleLiveData.value = "Соберите заказ"
 
         val mutablePizzas: MutableList<MutableState<PizzaItem>> = mutableListOf<MutableState<PizzaItem>>()
         Row(Modifier.fillMaxWidth().fillMaxHeight()) {
-            createMenuColumn(pizzas, worker, mutablePizzas)
-            createRawOrderColumn()
+            createMenuColumn(pizzas, mutablePizzas)
+            createConfirmOrderScreen(saveNewOrder)
         }
 
     }
@@ -51,10 +53,9 @@ fun createOrderScreen(
 @Composable
 fun createMenuColumn(
     pizzas: List<PizzaItem>,
-    worker: MutableState<Worker?>,
     tempList: MutableList<MutableState<PizzaItem>>
 ) {
-    Box(Modifier.width(800.dp).background(MAIN_BACKGROUND)) {
+    Box(Modifier.width(850.dp).padding(start = 50.dp).background(MAIN_BACKGROUND)) {
         createOrderColumnsNames()
         ScrollableColumn(Modifier.fillMaxWidth().fillMaxHeight().padding(top = 10.dp), isScrollEnabled = true) {
 
@@ -66,17 +67,17 @@ fun createMenuColumn(
 
             Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 25.dp),
                 onClick = {
-                    selectedPizzaItems.run {
-                        value = emptyList()
-                        value = tempList.map {
-                            it.value
-                        }.filter {
-                            it.count > 0
-                        }
-                        if (value.isNotEmpty()) {
-                            populateRawOrderColumn.value = true
-                        }
+                    selectedPizzaItems.value = emptyList()
+                    selectedPizzaItems.value = tempList.map {
+                        it.value
+                    }.filter {
+                        it.count > 0
                     }
+                    if (selectedPizzaItems.value.isNotEmpty()) {
+                        println("click ${Date().time}")
+                        isNeedConfirmOrder.value = true
+                    }
+
 
                 }) {
                 Text("Создать заказ")
@@ -99,11 +100,11 @@ fun createMenuColumn(
 @Composable
 fun createOrderColumnsNames() {
 
-    Row(Modifier.width(800.dp).padding( bottom = 10.dp).background(Color.Gray), Arrangement.Start) {
+    Row(Modifier.width(800.dp).padding(bottom = 10.dp).background(Color.Gray), Arrangement.Start) {
         Text(
             fontSize = TextUnit.Companion.Sp(25),
             text = "Имя",
-            modifier = Modifier.align(Alignment.CenterVertically).width(200.dp),
+            modifier = Modifier.align(Alignment.CenterVertically).width(200.dp).background(MyColors.NAME_BACKGROUND),
         )
 
         Text(
@@ -163,7 +164,8 @@ fun addPizzaItemWithCounter(pizzaItem: MutableState<PizzaItem>) {
             Text(
                 fontSize = TextUnit.Companion.Sp(25),
                 text = name,
-                modifier = Modifier.align(Alignment.CenterVertically).width(200.dp),
+                modifier = Modifier.align(Alignment.CenterVertically).width(200.dp)
+                    .background(MyColors.NAME_BACKGROUND),
             )
 
             Text(

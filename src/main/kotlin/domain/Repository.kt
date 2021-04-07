@@ -1,8 +1,7 @@
 package domain
 
 import data.DatabaseInteractor
-import domain.models.Pizza
-import domain.models.Worker
+import domain.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -26,7 +25,7 @@ object Repository {
 
     }
 
-    suspend fun getPizzaMenu(): PResult<List<Pizza>> {
+    suspend fun getPizzaMenu(): PResult<List<PizzaDatabase>> {
         return withContext(Dispatchers.IO) {
             try {
                 databaseInteractor.getPizzaMenu().toSuccessResult()
@@ -35,6 +34,36 @@ object Repository {
             }
         }
     }
+
+    suspend fun saveNewOrder(orderItem: OrderItem): PResult<Boolean> {
+        return withContext(Dispatchers.IO) {
+            try {
+                orderItem.run {
+                    return@withContext databaseInteractor.saveNewOrderMenu(
+                        OrderDatabase(
+                            workerId = worker.id,
+                            orderPizzas = orderedPizzas.toStringValue(),
+                            bill = bill,
+                            date = date
+                        )
+                    ).toSuccessResult()
+                }
+            } catch (e: Throwable) {
+                e.toErrorResult()
+            }
+        }
+    }
+
+//    suspend fun getAllOrder(): PResult<List<OrderDatabase>> {
+//        return withContext(Dispatchers.IO) {
+//            try {
+//                databaseInteractor.getA().toSuccessResult()
+//
+//            } catch (e: Throwable) {
+//                e.toErrorResult()
+//            }
+//        }
+//    }
 
     suspend fun cleanUpResources() {
         databaseInteractor.closeConnection()

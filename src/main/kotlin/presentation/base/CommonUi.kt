@@ -16,7 +16,7 @@ import presentation.base.errorLiveData
 import presentation.base.loadingLiveData
 import presentation.base.titleLiveData
 import presentation.login.isNeedLogout
-import presentation.login.worker
+import presentation.login.currentWorker
 
 /**
  * Отображает заголовок
@@ -91,9 +91,9 @@ fun customizeErrorDisplay() {
  */
 @Composable
 fun customizeWorkerDisplay() {
-    if (worker.value != null) {
+    if (currentWorker.value != null) {
         Column(Modifier.fillMaxWidth().wrapContentHeight().background(Color.Magenta)) {
-            worker.value?.run {
+            currentWorker.value?.run {
                 Text(
                     fontSize = TextUnit.Companion.Sp(25),
                     text = "Работник: id=$id, $firstName $secondName",
