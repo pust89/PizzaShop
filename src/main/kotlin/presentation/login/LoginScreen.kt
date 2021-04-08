@@ -14,12 +14,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import domain.models.Worker
+import domain.models.Admin
 
-val currentWorker = mutableStateOf<Worker?>(null)
+val currentAdmin = mutableStateOf<Admin?>(null)
 
-val loginLiveData = mutableStateOf<String>("login1")
-val passwordLiveData = mutableStateOf<String>("password1")
+val loginLiveData = mutableStateOf<String>("login3")
+val passwordLiveData = mutableStateOf<String>("password3")
 val isInSystem = mutableStateOf<Boolean>(false)
 val isNeedLogout = mutableStateOf<Boolean>(false)
 /**

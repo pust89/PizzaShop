@@ -1,5 +1,9 @@
 package domain.models
 
+data class ResponsePizza(
+    val pizzas: List<PizzaDatabase>
+)
+
 /**
  * Data model
  */

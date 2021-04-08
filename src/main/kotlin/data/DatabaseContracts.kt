@@ -12,9 +12,8 @@ object PizzaTable {
 
     const val QUERY_SELECT_ALL = "SELECT * FROM ${PizzaTable.TABLE_NAME};"
 }
-
-object WorkerTable {
-    const val TABLE_NAME = "workers"
+object AdminsTable {
+    const val TABLE_NAME = "admins"
     const val COLUMN_ID = "id"
     const val COLUMN_LOGIN = "login"
     const val COLUMN_PASSWORD = "password"
@@ -22,9 +21,18 @@ object WorkerTable {
     const val COLUMN_SECOND_NAME = "secondName"
 
     fun createLoginQuery(login: String, password: String): String {
-        return "SELECT * FROM ${WorkerTable.TABLE_NAME} WHERE $COLUMN_LOGIN = '$login' AND $COLUMN_PASSWORD = '$password';"
+        return "SELECT * FROM ${AdminsTable.TABLE_NAME} WHERE $COLUMN_LOGIN = '$login' AND $COLUMN_PASSWORD = '$password';"
     }
+}
+object WorkerTable {
+    const val TABLE_NAME = "workers"
+    const val COLUMN_ID = "id"
+    const val COLUMN_FIRST_NAME = "firstName"
+    const val COLUMN_SECOND_NAME = "secondName"
 
+    fun createWorkerByIdQuery(workerId: Int): String {
+        return "SELECT * FROM ${WorkerTable.TABLE_NAME} WHERE $COLUMN_ID = '$workerId';"
+    }
 }
 
 object OrderTable {
@@ -40,4 +48,7 @@ object OrderTable {
         return "INSERT ${OrderTable.TABLE_NAME} ($COLUMN_WORKER_ID, $COLUMN_ORDERED_PIZZAS, $COLUMN_BILL, $COLUMN_DATE)" +
                 " VALUES ('$workerId','$orderPizzas','$bill','$date');"
     }
+
+    const val QUERY_SELECT_ALL = "SELECT * FROM ${OrderTable.TABLE_NAME} ORDER BY '$COLUMN_ID' DESC;"
+
 }

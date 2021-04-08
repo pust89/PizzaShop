@@ -51,7 +51,7 @@ fun createOrderScreen(
  * заголовки таблицы меню и само меню сос счетчиками.
  */
 @Composable
-fun createMenuColumn(
+private fun createMenuColumn(
     pizzas: List<PizzaItem>,
     tempList: MutableList<MutableState<PizzaItem>>
 ) {
@@ -98,7 +98,7 @@ fun createMenuColumn(
  * стоимость (количество * цена за 1 шт.)
  */
 @Composable
-fun createOrderColumnsNames() {
+private fun createOrderColumnsNames() {
 
     Row(Modifier.width(800.dp).padding(bottom = 10.dp).background(Color.Gray), Arrangement.Start) {
         Text(
@@ -153,7 +153,7 @@ fun createOrderColumnsNames() {
  * стоимость (количество * цена за 1 шт.)
  */
 @Composable
-fun addPizzaItemWithCounter(pizzaItem: MutableState<PizzaItem>) {
+private fun addPizzaItemWithCounter(pizzaItem: MutableState<PizzaItem>) {
     val pizza: PizzaItem = pizzaItem.value
     val count = remember { mutableStateOf<Int>(pizza.count) }
     val cost = remember { mutableStateOf<Int>(0) }

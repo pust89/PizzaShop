@@ -9,15 +9,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntSize
 import domain.PResult
-import domain.models.PizzaDatabase
-import domain.models.Worker
-import domain.models.convertToPizzaItem
+import domain.models.*
 import presentation.base.BaseViewController
 import presentation.base.MyColors
+import presentation.base.titleLiveData
 import presentation.createorder.createOrderScreen
 import presentation.createorder.isNeedCreateOrder
 import presentation.createorder.pizzaItemsMenu
 import presentation.login.*
+import presentation.showorders.createShowOrderScreen
+import presentation.showorders.displayedOrders
+import presentation.showorders.isNeedShowOrders
 
 fun main() {
     MainViewController()
@@ -38,11 +40,12 @@ class MainViewController : BaseViewController() {
                 Column(Modifier.fillMaxWidth().fillMaxHeight().background(MyColors.MAIN_BACKGROUND)) {
                     customizeTitleDisplay(
                         processSignOut = { processSignOut() },
-                        processCreateNewOrder = { processCreateNewOrder() })
+                        processCreateNewOrder = { processCreateNewOrder() },
+                    processShowOrders = {processShowOrders()})
 
                     customizeDownloadingDisplay()
                     customizeErrorDisplay()
-                    customizeWorkerDisplay()
+                    customizeAdminDisplay()
 
                     loginScreen(
                         processSignIn = { processSignIn(loginLiveData.value, passwordLiveData.value) }
@@ -56,8 +59,8 @@ class MainViewController : BaseViewController() {
                                 saveNewOrder(newOrderItem)
                             }
                         )
-
                     }
+                    createShowOrderScreen(isNeedShowOrders)
 
                 }
 
@@ -67,17 +70,23 @@ class MainViewController : BaseViewController() {
 
 
     override fun handledSuccessResult(result: PResult.Success<*>) {
-        (result.data as? Worker)?.let {
+        (result.data as? Admin)?.let {
             println("result =$it")
-            currentWorker.value = it
+            currentAdmin.value = it
             isInSystem.value = true
             isNeedLogout.value = true
             downloadMenu()
         }
 
-        (result.data as? List<PizzaDatabase>)?.let {
-            pizzaItemsMenu.value = it.convertToPizzaItem()
+        (result.data as? ResponsePizza)?.let {
+            pizzaItemsMenu.value = it.pizzas.convertToPizzaItem()
             isNeedCreateOrder.value = true
+        }
+
+        (result.data as? ResponseOrder)?.let {
+            displayedOrders.value = it.orders
+            isNeedShowOrders.value = true
+            titleLiveData.value = "Заказы"
         }
     }
 

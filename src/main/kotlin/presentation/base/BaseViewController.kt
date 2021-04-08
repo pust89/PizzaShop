@@ -12,6 +12,7 @@ import presentation.createorder.isNeedCreateOrder
 import presentation.createorder.isNeedConfirmOrder
 import presentation.createorder.selectedPizzaItems
 import presentation.login.*
+import presentation.showorders.isNeedShowOrders
 
 val titleLiveData = mutableStateOf<String>("Добро подаловать в приложение нашего пице-ресторана")
 val errorLiveData = mutableStateOf<String>("")
@@ -75,13 +76,13 @@ abstract class BaseViewController {
     fun processSignOut() {
         scope.launch {
             showLoading()
-            delay(1000)
+            delay(500)
             loginLiveData.value = ""
             passwordLiveData.value = ""
             isNeedConfirmOrder.value = false
             isInSystem.value = false
             isNeedLogout.value = false
-            currentWorker.value = null
+            currentAdmin.value = null
             titleLiveData.value = "Добро подаловать в приложение нашего пице-ресторана"
             hideLoading()
         }
@@ -90,12 +91,26 @@ abstract class BaseViewController {
 
     fun processCreateNewOrder() {
         scope.launch {
+            isNeedShowOrders.value = false
             isNeedCreateOrder.value = false
             isNeedConfirmOrder.value = false
             selectedPizzaItems.value = emptyList()
             showLoading()
-            delay(1000)
+            delay(500)
             downloadMenu()
+        }
+    }
+
+    fun processShowOrders() {
+        scope.launch {
+            isNeedShowOrders.value = true
+            showLoading()
+            delay(500)
+            isNeedCreateOrder.value = false
+            isNeedConfirmOrder.value = false
+            selectedPizzaItems.value = emptyList()
+            handleResult(appRepository.getAllOrders())
+
         }
     }
 
@@ -103,17 +118,18 @@ abstract class BaseViewController {
         println("Save newOrderInvoked")
         scope.launch {
             showLoading()
-            delay(1000)
+            delay(500)
             isNeedCreateOrder.value = false
             isNeedConfirmOrder.value = false
             selectedPizzaItems.value = emptyList()
             handleResult(appRepository.saveNewOrder(orderItem))
+            processCreateNewOrder()
+
         }
     }
 
     fun downloadMenu() {
         scope.launch {
-            showLoading()
             handleResult(appRepository.getPizzaMenu())
         }
     }

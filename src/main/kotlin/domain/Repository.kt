@@ -4,6 +4,7 @@ import data.DatabaseInteractor
 import domain.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 /**
  * Репозиторий (единственно-верный источник данных в приложении)
@@ -12,7 +13,7 @@ object Repository {
 
     private val databaseInteractor: DatabaseInteractor = DatabaseInteractor
 
-    suspend fun signIn(login: String, password: String): PResult<Worker> {
+    suspend fun signIn(login: String, password: String): PResult<Admin> {
         return withContext(Dispatchers.IO) {
             try {
                 databaseInteractor.signIn(login, password)?.let {
@@ -25,10 +26,12 @@ object Repository {
 
     }
 
-    suspend fun getPizzaMenu(): PResult<List<PizzaDatabase>> {
+    suspend fun getPizzaMenu(): PResult<ResponsePizza> {
         return withContext(Dispatchers.IO) {
             try {
-                databaseInteractor.getPizzaMenu().toSuccessResult()
+                ResponsePizza(
+                    databaseInteractor.getPizzaMenu()
+                ).toSuccessResult()
             } catch (e: Throwable) {
                 e.toErrorResult()
             }
@@ -40,9 +43,9 @@ object Repository {
             try {
                 orderItem.run {
                     return@withContext databaseInteractor.saveNewOrderMenu(
-                        OrderDatabase(
-                            workerId = worker.id,
-                            orderPizzas = orderedPizzas.toStringValue(),
+                        SaveOrderDbModel(
+                            workerId = Random.nextInt(1,11),
+                            orderPizzas = orderedPizzas.toStringValue().trimEnd(),
                             bill = bill,
                             date = date
                         )
@@ -54,16 +57,17 @@ object Repository {
         }
     }
 
-//    suspend fun getAllOrder(): PResult<List<OrderDatabase>> {
-//        return withContext(Dispatchers.IO) {
-//            try {
-//                databaseInteractor.getA().toSuccessResult()
-//
-//            } catch (e: Throwable) {
-//                e.toErrorResult()
-//            }
-//        }
-//    }
+    suspend fun getAllOrders(): PResult<ResponseOrder> {
+        return withContext(Dispatchers.IO) {
+            try {
+                ResponseOrder(
+                    databaseInteractor.getAllOrders()
+                ).toSuccessResult()
+            } catch (e: Throwable) {
+                e.toErrorResult()
+            }
+        }
+    }
 
     suspend fun cleanUpResources() {
         databaseInteractor.closeConnection()

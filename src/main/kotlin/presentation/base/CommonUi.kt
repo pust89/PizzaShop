@@ -16,13 +16,16 @@ import presentation.base.errorLiveData
 import presentation.base.loadingLiveData
 import presentation.base.titleLiveData
 import presentation.login.isNeedLogout
-import presentation.login.currentWorker
+import presentation.login.currentAdmin
 
 /**
  * Отображает заголовок
  */
 @Composable
-fun customizeTitleDisplay(processSignOut: () -> Unit, processCreateNewOrder: () -> Unit) {
+fun customizeTitleDisplay(
+    processSignOut: () -> Unit,
+    processCreateNewOrder: () -> Unit,
+    processShowOrders: () -> Unit){
     Box(
         modifier = Modifier.fillMaxWidth().wrapContentHeight().background(MAIN_BACKGROUND),
     ) {
@@ -47,6 +50,14 @@ fun customizeTitleDisplay(processSignOut: () -> Unit, processCreateNewOrder: () 
                     processCreateNewOrder()
                 }) {
                 Text("Новый зака")
+            }
+
+            Button(
+                modifier = Modifier.align(Alignment.TopEnd).padding(end = 250.dp),
+                onClick = {
+                    processShowOrders()
+                }) {
+                Text("Заказы")
             }
         }
     }
@@ -90,13 +101,13 @@ fun customizeErrorDisplay() {
  * Метод добавляет отображение залогиненного пользователя
  */
 @Composable
-fun customizeWorkerDisplay() {
-    if (currentWorker.value != null) {
+fun customizeAdminDisplay() {
+    if (currentAdmin.value != null) {
         Column(Modifier.fillMaxWidth().wrapContentHeight().background(Color.Magenta)) {
-            currentWorker.value?.run {
+            currentAdmin.value?.run {
                 Text(
                     fontSize = TextUnit.Companion.Sp(25),
-                    text = "Работник: id=$id, $firstName $secondName",
+                    text = "Администратор: $firstName $secondName",
                 )
             }
         }

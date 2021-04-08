@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +16,8 @@ import androidx.compose.ui.unit.dp
 import domain.models.*
 import presentation.base.MyColors
 import presentation.base.getCurrentTime
-import presentation.login.currentWorker
+import presentation.login.currentAdmin
+import kotlin.random.Random
 
 val selectedPizzaItems = mutableStateOf<List<PizzaItem>>(emptyList())
 val isNeedConfirmOrder = mutableStateOf<Boolean>(false)
@@ -36,9 +36,7 @@ fun createConfirmOrderScreen(
                 Modifier.fillMaxWidth().fillMaxHeight().padding(start = 50.dp, end = 50.dp),
                 isScrollEnabled = true
             ) {
-
                 val order = OrderItem(
-                    worker = currentWorker.value!!,
                     orderedPizzas = selectedPizzaItems.value.convertToOrderedPizza(),
                     bill = selectedPizzaItems.value.calculateBill(),
                     date = getCurrentTime()
@@ -71,7 +69,7 @@ fun createConfirmOrderScreen(
 }
 
 @Composable
-fun addOrderedPizzaColumnNames() {
+private fun addOrderedPizzaColumnNames() {
 
     Row(Modifier.width(500.dp).padding(bottom = 10.dp).background(Color.Gray), Arrangement.Center) {
         Text(
@@ -98,7 +96,7 @@ fun addOrderedPizzaColumnNames() {
 }
 
 @Composable
-fun addRawOrderedPizza(orderedPizza: OrderedPizza) {
+private fun addRawOrderedPizza(orderedPizza: OrderedPizza) {
 
     Row(Modifier.width(500.dp).padding(bottom = 10.dp).background(Color.Gray), Arrangement.Center) {
         Text(
@@ -125,7 +123,7 @@ fun addRawOrderedPizza(orderedPizza: OrderedPizza) {
 }
 
 @Composable
-fun addRawOrderBill(bill: Int) {
+private fun addRawOrderBill(bill: Int) {
 
     Row(Modifier.width(500.dp).padding(bottom = 10.dp).background(Color.Gray), Arrangement.Center) {
         Text(
@@ -145,7 +143,7 @@ fun addRawOrderBill(bill: Int) {
 }
 
 @Composable
-fun addRawOrderDate(date: String) {
+private fun addRawOrderDate(date: String) {
     Row(Modifier.width(500.dp).padding(bottom = 10.dp).background(Color.Gray), Arrangement.Center) {
         Text(
             fontSize = TextUnit.Companion.Sp(25),

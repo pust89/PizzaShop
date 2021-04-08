@@ -1,11 +1,10 @@
 package data
 
+import data.local.AdminsTable
 import data.local.OrderTable
 import data.local.PizzaTable
 import data.local.WorkerTable
-import domain.models.OrderDatabase
-import domain.models.PizzaDatabase
-import domain.models.Worker
+import domain.models.*
 import java.sql.*
 import java.util.*
 
@@ -66,22 +65,33 @@ object DatabaseInteractor {
     }
 
 
-    private fun selectPizzaShopDatabase(connection: Connection) {
+    /**
+     * Заходим в систему по логину и паролю.
+     */
+    fun signIn(login: String, password: String): Admin? {
         val statement: Statement = connection.createStatement()
-        val resultSet: ResultSet = statement.executeQuery("SHOW DATABASES;")
-        while (resultSet.next()) {
-            println(resultSet.getString("Database"))
+        val loginQuery = AdminsTable.createLoginQuery(login, password)
+        println(loginQuery)
+        val resultSet: ResultSet = statement.executeQuery(loginQuery)
+        return if (resultSet.next()) {
+            Admin(
+                id = resultSet.getInt(WorkerTable.COLUMN_ID),
+                firstName = resultSet.getString(WorkerTable.COLUMN_FIRST_NAME),
+                secondName = resultSet.getString(WorkerTable.COLUMN_SECOND_NAME)
+            )
+        } else {
+            null
         }
     }
 
     /**
      * Заходим в систему по логину и паролю.
      */
-    fun signIn(login: String, password: String): Worker? {
+    fun getWorkerById(workerId: Int): Worker? {
         val statement: Statement = connection.createStatement()
-        val loginQuery = WorkerTable.createLoginQuery(login, password)
-        println(loginQuery)
-        val resultSet: ResultSet = statement.executeQuery(loginQuery)
+        val query = WorkerTable.createWorkerByIdQuery(workerId)
+        println(query)
+        val resultSet: ResultSet = statement.executeQuery(query)
         return if (resultSet.next()) {
             Worker(
                 id = resultSet.getInt(WorkerTable.COLUMN_ID),
@@ -119,11 +129,40 @@ object DatabaseInteractor {
     /**
      * Сохраняет новый заказ
      */
-    fun saveNewOrderMenu(order: OrderDatabase): Boolean {
+    fun saveNewOrderMenu(order: SaveOrderDbModel): Boolean {
         val statement: Statement = connection.createStatement()
         val insertOrderQuery = order.run {
             OrderTable.createSaveOrderQuery(workerId, orderPizzas, bill, date)
         }
         return statement.execute(insertOrderQuery)
+    }
+
+    /**
+     * Возвращает список всех заказов
+     */
+    fun getAllOrders(): List<DisplayOrderItem> {
+        val statement: Statement = connection.createStatement()
+        val resultSet: ResultSet = statement.executeQuery(OrderTable.QUERY_SELECT_ALL)
+        val resultLit = mutableListOf<DisplayOrderItem>()
+        while (resultSet.next()) {
+            resultSet.apply {
+                val workerId = getInt(OrderTable.COLUMN_WORKER_ID)
+                getWorkerById(workerId)?.let {worker->
+                    resultLit.add(
+                        DisplayOrderItem(
+                            orderId =  getInt(OrderTable.COLUMN_ID),
+                            worker =worker,
+                            orderPizzas = getString(OrderTable.COLUMN_ORDERED_PIZZAS),
+                            bill = getInt(OrderTable.COLUMN_BILL),
+                            date = getString(OrderTable.COLUMN_DATE)
+                        )
+                    )
+
+                }
+
+            }
+
+        }
+        return resultLit.sortedByDescending { it.orderId }
     }
 }
