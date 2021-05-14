@@ -119,12 +119,11 @@ abstract class BaseViewController {
         scope.launch {
             showLoading()
             delay(500)
+            handleResult(appRepository.saveNewOrder(admin =  currentAdmin.value!!,orderItem))
             isNeedCreateOrder.value = false
             isNeedConfirmOrder.value = false
             selectedPizzaItems.value = emptyList()
-            handleResult(appRepository.saveNewOrder(orderItem))
             processCreateNewOrder()
-
         }
     }
 

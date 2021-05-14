@@ -3,6 +3,7 @@ package domain.models
 data class ResponseOrder(
     val orders: List<DisplayOrderItem>
 )
+
 /**
  * Data model
  */
@@ -32,7 +33,7 @@ data class OrderedPizza(
     val quantity: Int,
     val cost: Int
 ) {
-    override fun toString() = "$name, $quantity 'шт.' $cost 'руб.'"
+    override fun toString() = "$name qty:$quantity cost:$cost"
 }
 
 
@@ -45,7 +46,8 @@ data class DisplayOrderItem(
     val orderPizzas: String,
     val bill: Int,
     val date: String,
-){
+    val checkUi: CheckUi
+) {
     override fun toString() = "Официант:${worker.secondName} ${worker.firstName}\n\n" +
             "Заказ #$orderId\n\n$orderPizzas\n\nСчет:$bill руб.\n\n$date"
 }

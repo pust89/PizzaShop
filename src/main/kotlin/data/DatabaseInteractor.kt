@@ -1,10 +1,8 @@
 package data
 
-import data.local.AdminsTable
-import data.local.OrderTable
-import data.local.PizzaTable
-import data.local.WorkerTable
+import data.local.*
 import domain.models.*
+import presentation.login.currentAdmin
 import java.sql.*
 import java.util.*
 
@@ -34,37 +32,6 @@ object DatabaseInteractor {
         }
     }
 
-
-    fun executeMySQLQuery(connection: Connection) {
-        var stmt: Statement? = null
-        var resultset: ResultSet? = null
-
-        try {
-            stmt = connection.createStatement()
-            resultset = stmt!!.executeQuery("SHOW DATABASES;")
-
-            if (stmt.execute("SHOW DATABASES;")) {
-                resultset = stmt.resultSet
-            }
-
-            while (resultset!!.next()) {
-                println(resultset.getString("Database"))
-            }
-        } catch (ex: SQLException) {
-            // handle any errors
-            ex.printStackTrace()
-        } finally {
-            // release resources
-            if (resultset != null) {
-                try {
-                    resultset.close()
-                } catch (sqlEx: SQLException) {
-                }
-            }
-        }
-    }
-
-
     /**
      * Заходим в систему по логину и паролю.
      */
@@ -85,11 +52,11 @@ object DatabaseInteractor {
     }
 
     /**
-     * Заходим в систему по логину и паролю.
+     * Возвращает работника по id
      */
     fun getWorkerById(workerId: Int): Worker? {
         val statement: Statement = connection.createStatement()
-        val query = WorkerTable.createWorkerByIdQuery(workerId)
+        val query = WorkerTable.getWorkerByIdQuery(workerId)
         println(query)
         val resultSet: ResultSet = statement.executeQuery(query)
         return if (resultSet.next()) {
@@ -126,13 +93,34 @@ object DatabaseInteractor {
         return resultLit
     }
 
+
     /**
-     * Сохраняет новый заказ
+     * Сохраняет новый  чек и возвращает его id
      */
-    fun saveNewOrderMenu(order: SaveOrderDbModel): Boolean {
+    fun saveNewCheck(admin: Admin, order: SaveOrderDbModel): Boolean {
+        var insertedId = 0
+        val statement: Statement = connection.createStatement()
+        val insertCheckQuery = order.run {
+            CheckTable.createSaveCheckQuery(admin.id, orderPizzas, bill, date)
+        }
+        statement.execute(insertCheckQuery)
+        val resultSet: ResultSet = statement.executeQuery(CheckTable.QUERY_GET_LAST_INSERTED_ID)
+        while (resultSet.next()) {
+            resultSet.apply {
+                insertedId = getInt("MAX(id)")
+            }
+        }
+        println("insertedId = $insertedId")
+        return saveNewOrder(insertedId,order )
+    }
+
+    /**
+     * Сохраняет новый заказ и чек
+     */
+    fun saveNewOrder(checkId: Int, order: SaveOrderDbModel): Boolean {
         val statement: Statement = connection.createStatement()
         val insertOrderQuery = order.run {
-            OrderTable.createSaveOrderQuery(workerId, orderPizzas, bill, date)
+            OrderTable.createSaveOrderQuery(workerId, checkId)
         }
         return statement.execute(insertOrderQuery)
     }
@@ -147,22 +135,66 @@ object DatabaseInteractor {
         while (resultSet.next()) {
             resultSet.apply {
                 val workerId = getInt(OrderTable.COLUMN_WORKER_ID)
-                getWorkerById(workerId)?.let {worker->
-                    resultLit.add(
-                        DisplayOrderItem(
-                            orderId =  getInt(OrderTable.COLUMN_ID),
-                            worker =worker,
-                            orderPizzas = getString(OrderTable.COLUMN_ORDERED_PIZZAS),
-                            bill = getInt(OrderTable.COLUMN_BILL),
-                            date = getString(OrderTable.COLUMN_DATE)
+                val checkId = getInt(OrderTable.COLUMN_CHECK_ID)
+                getWorkerById(workerId)?.let { worker ->
+                    getCheckById(checkId)?.let { checkUi ->
+                        resultLit.add(
+                            DisplayOrderItem(
+                                orderId = getInt(OrderTable.COLUMN_ID),
+                                worker = worker,
+                                orderPizzas = checkUi.description,
+                                bill = checkUi.bill,
+                                date = checkUi.date,
+                                checkUi = checkUi
+                            )
                         )
-                    )
-
+                    }
                 }
-
             }
 
         }
         return resultLit.sortedByDescending { it.orderId }
     }
+
+    /**
+     * Возвращает чек по id
+     */
+    fun getCheckById(checkId: Int): CheckUi? {
+        val statement: Statement = connection.createStatement()
+        val query = CheckTable.getCheckByIdQuery(checkId)
+        println(query)
+        val resultSet: ResultSet = statement.executeQuery(query)
+        return if (resultSet.next()) {
+            val adminId = resultSet.getInt(CheckTable.COLUMN_ADMIN_ID)
+            val adminUi = getAdminById(adminId)!!
+            CheckUi(
+                adminUi = adminUi,
+                checkId = resultSet.getInt(CheckTable.COLUMN_ID),
+                description = resultSet.getString(CheckTable.COLUMN_DESCRIPTION),
+                bill = resultSet.getInt(CheckTable.COLUMN_BILL),
+                date = resultSet.getString(CheckTable.COLUMN_DATE)
+            )
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Возвращает работника по id
+     */
+    fun getAdminById(adminId: Int): AdminUi? {
+        val statement: Statement = connection.createStatement()
+        val query = AdminsTable.getAdminByIdQuery(adminId)
+        println(query)
+        val resultSet: ResultSet = statement.executeQuery(query)
+        return if (resultSet.next()) {
+            AdminUi(
+                firstName = resultSet.getString(AdminsTable.COLUMN_FIRST_NAME),
+                secondName = resultSet.getString(AdminsTable.COLUMN_SECOND_NAME)
+            )
+        } else {
+            null
+        }
+    }
+
 }

@@ -1,14 +1,21 @@
 package domain.models
 
 /**
- * Data and Ui model
+ * Data model
  */
 data class Admin(
     val id: Int,
     val firstName: String,
     val secondName: String
-) {
-}
+)
+
+/**
+ * Ui model
+ */
+data class AdminUi(
+    val firstName: String,
+    val secondName: String
+)
 
 /**
  * Data and Ui model

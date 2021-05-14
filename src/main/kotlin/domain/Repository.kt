@@ -38,18 +38,39 @@ object Repository {
         }
     }
 
-    suspend fun saveNewOrder(orderItem: OrderItem): PResult<Boolean> {
+    //    suspend fun saveNewOrder(admin: Admin,orderItem: OrderItem): PResult<Boolean> {
+//        return withContext(Dispatchers.IO) {
+//            try {
+//                orderItem.run {
+//                    return@withContext databaseInteractor.saveNewOrderMenu(
+//                        SaveOrderDbModel(
+//                            workerId = Random.nextInt(1,11),
+//                            orderPizzas = orderedPizzas.toStringValue().trimEnd(),
+//                            bill = bill,
+//                            date = date
+//                        )
+//                    ).toSuccessResult()
+//                }
+//            } catch (e: Throwable) {
+//                e.toErrorResult()
+//            }
+//        }
+//    }
+    suspend fun saveNewOrder(admin: Admin, orderItem: OrderItem): PResult<Boolean> {
         return withContext(Dispatchers.IO) {
             try {
                 orderItem.run {
-                    return@withContext databaseInteractor.saveNewOrderMenu(
+                    //return@withContext
+                    databaseInteractor.saveNewCheck(
+                        admin,
                         SaveOrderDbModel(
-                            workerId = Random.nextInt(1,11),
+                            workerId = Random.nextInt(1, 11),
                             orderPizzas = orderedPizzas.toStringValue().trimEnd(),
                             bill = bill,
                             date = date
                         )
-                    ).toSuccessResult()
+                    )
+                    true.toSuccessResult()
                 }
             } catch (e: Throwable) {
                 e.toErrorResult()

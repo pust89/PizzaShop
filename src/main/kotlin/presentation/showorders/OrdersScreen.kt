@@ -80,7 +80,7 @@ private fun addOrderRaw(item: DisplayOrderItem) {
             onClick = {
                 isShowInfo.value = true
             }) {
-            Text("Info")
+            Text("Check")
         }
 
         if (isShowInfo.value) {
@@ -89,7 +89,7 @@ private fun addOrderRaw(item: DisplayOrderItem) {
             }) {
                 Text(
             fontSize = TextUnit.Companion.Sp(20),
-            text = item.toString(),
+            text = item.checkUi.toString(),
             modifier = Modifier.align(Alignment.CenterVertically).width(400.dp).fillMaxHeight().background(MyColors.NAME_BACKGROUND),
             textAlign = TextAlign.Center,
         )
